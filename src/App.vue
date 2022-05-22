@@ -1,6 +1,6 @@
 <template>
 <div>
-  Hi!   Variant xz1
+  Hi!   Variant xz1 new
 </div>
 </template>
 
