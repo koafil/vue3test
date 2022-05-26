@@ -2,18 +2,16 @@
   <form @submit.prevent>
     <h4>Создание поста</h4>
     <input 
-      v-bind:value="post.title" 
-      @input="post.title = $event.target.value"
+      v-model="post.title" 
       class="input" 
       type="text" 
       placeholder="Название"
     >
     <input 
-    v-bind:value="post.body" 
-    @input="post.body = $event.target.value" 
-    class="input" 
-    type="text" 
-    placeholder="Описание"
+      v-model="post.body" 
+      class="input" 
+      type="text" 
+      placeholder="Описание"
     >
     <button class="btn" >Создать</button>
   </form>  
