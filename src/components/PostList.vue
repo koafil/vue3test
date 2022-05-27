@@ -3,7 +3,9 @@
     <h3>Список постов</h3>
     <post-item 
       v-for = 'post in posts' 
-      v-bind:post="post"
+      :post="post"
+      :key="post.id"
+      @remove="$emit('remove',post)"
     />
   </div>
 </template>
