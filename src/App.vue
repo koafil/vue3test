@@ -44,6 +44,7 @@ export default {
       sortOptions: [
         {value: 'title', name: 'По названию'},
         {value: 'body', name: 'По содержимому'},
+        {value: 'id', name: 'По идентификатору'},
       ]
     }
   },
@@ -75,7 +76,9 @@ export default {
   },
   computed: {
     sortedPosts() {
-      return [...this.posts].sort((post1, post2)=>post1[this.selectedSort]?.localeCompare(post2[this.selectedSort]));
+      if(this.selectedSort === 'id')
+      return [...this.posts].sort((post1, post2)=>post1.id>post2.id);
+      else return [...this.posts].sort((post1, post2)=>post1[this.selectedSort]?.localeCompare(post2[this.selectedSort]));
     }
   },
   watch: {
