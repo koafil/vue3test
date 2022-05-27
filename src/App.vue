@@ -25,7 +25,6 @@
 <script>
 import PostList from "./components/PostList";
 import PostForm from "./components/PostForm";
-import axios from "axios";
 
 export default {
   components: {
@@ -51,17 +50,14 @@ export default {
       this.dialogVisible = true;
     },
     fetchPosts() {
-      try {
-        this.isPostsLoading=true;
-        setTimeout( async ()=> {
-          const response = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10');
-          this.posts=response.data;
-          this.isPostsLoading=false;
-        }, 1000);
-      }catch(e){
-          alert("Ошибка");
-      } finally {
-      }
+      setTimeout(()=>{
+      this.isPostsLoading=true;
+      fetch('https://jsonplaceholder.typicode.com/posts?_limit=10')
+        .then(response => response.json())
+        .then(json => this.posts=json)
+        .catch(()=>alert("Error"))
+        .finally(()=>this.isPostsLoading=false);
+      },1000);
     }
   },
   mounted() {
