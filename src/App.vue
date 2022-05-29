@@ -11,6 +11,7 @@
     </my-dialog>
     <post-list
       :posts="sortedAndSearchedPosts"
+      :searchText="searchQuery"
       @remove="removePost"
       v-if="!isPostsLoading"
     />
@@ -78,7 +79,7 @@ export default {
     },
     sortedAndSearchedPosts() {
       return this.sortedPosts.filter((post) =>
-        post.title.toLowerCase().includes(this.searchQuery.toLowerCase())
+        post.body.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
     },
   },

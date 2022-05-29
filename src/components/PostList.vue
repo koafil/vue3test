@@ -6,6 +6,7 @@
         v-for="post in posts"
         :post="post"
         :key="post.id"
+        :searchText="searchText"
         @remove="$emit('remove', post)"
       />
     </transition-group>
@@ -21,6 +22,10 @@ export default {
     posts: {
       type: Array,
       required: true,
+    },
+    searchText: {
+      type: String,
+      default: "",
     },
   },
 };
