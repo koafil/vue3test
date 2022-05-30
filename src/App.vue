@@ -16,7 +16,19 @@
       v-if="!isPostsLoading"
     />
     <div v-else>Идет загрузка...</div>
-    <!-- <post-list /> -->
+    <div class="page__wrapper">
+      <div 
+        v-for="pageNumber in totalPages" 
+        :key="pageNumber"
+        class = "page"
+        :class = "{
+          'current-page': page ===pageNumber
+        }"
+        @click = "changePage(pageNumber)"
+      >
+        {{ pageNumber }}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -36,6 +48,9 @@ export default {
       isPostsLoading: true,
       selectedSort: "",
       searchQuery: "",
+      page: 1,
+      limit: 7,
+      totalPages: 0,
       sortOptions: [
         { value: "title", name: "По названию" },
         { value: "body", name: "По содержимому" },
@@ -54,15 +69,28 @@ export default {
     showDialog() {
       this.dialogVisible = true;
     },
+    changePage(pageNumber) {
+      this.page = pageNumber;
+      // this.fetchPosts();
+    },
     fetchPosts() {
       setTimeout(() => {
         this.isPostsLoading = true;
-        fetch("https://jsonplaceholder.typicode.com/posts?_limit=10")
-          .then((response) => response.json())
+        // fetch("https://jsonplaceholder.typicode.com/posts?_limit=10")
+        let url = new URL("https://jsonplaceholder.typicode.com/posts");
+        url.searchParams.set("_page", this.page);
+        url.searchParams.set("_limit", this.limit);
+        fetch(url)
+          .then((response) => {
+            this.totalPages = Math.ceil(
+              response.headers.get("x-total-count") / this.limit
+            );
+            return response.json();
+          })
           .then((json) => (this.posts = json))
           .catch(() => alert("Error"))
           .finally(() => (this.isPostsLoading = false));
-      }, 1000);
+      }, 100);
     },
   },
   mounted() {
@@ -83,7 +111,11 @@ export default {
       );
     },
   },
-  watch: {},
+  watch: {
+    page() {
+      this.fetchPosts();
+    }
+  },
 };
 </script>
 
@@ -100,5 +132,17 @@ export default {
   display: flex;
   justify-content: space-between;
   margin: 15px 0;
+}
+.page__wrapper {
+  display: flex;
+  margin-top: 15px;
+}
+.page {
+  border: 1px solid black;
+  padding: 10px;
+}
+.current-page {
+  border: 2px solid teal;
+  background-color: bisque;
 }
 </style>
