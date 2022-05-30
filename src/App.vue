@@ -16,19 +16,7 @@
       v-if="!isPostsLoading"
     />
     <div v-else>Идет загрузка...</div>
-    <div class="page__wrapper">
-      <div 
-        v-for="pageNumber in totalPages" 
-        :key="pageNumber"
-        class = "page"
-        :class = "{
-          'current-page': page ===pageNumber
-        }"
-        @click = "changePage(pageNumber)"
-      >
-        {{ pageNumber }}
-      </div>
-    </div>
+    <div ref="observer" class="observer"></div>
   </div>
 </template>
 
@@ -69,10 +57,6 @@ export default {
     showDialog() {
       this.dialogVisible = true;
     },
-    changePage(pageNumber) {
-      this.page = pageNumber;
-      // this.fetchPosts();
-    },
     fetchPosts() {
       setTimeout(() => {
         this.isPostsLoading = true;
@@ -92,9 +76,43 @@ export default {
           .finally(() => (this.isPostsLoading = false));
       }, 100);
     },
+    loadMorePosts() {
+      setTimeout(() => {
+        this.page++;
+        // fetch("https://jsonplaceholder.typicode.com/posts?_limit=10")
+        let url = new URL("https://jsonplaceholder.typicode.com/posts");
+        url.searchParams.set("_page", this.page);
+        url.searchParams.set("_limit", this.limit);
+        fetch(url)
+          .then((response) => {
+            this.totalPages = Math.ceil(
+              response.headers.get("x-total-count") / this.limit
+            );
+            return response.json();
+          })
+          .then((json) => {
+            this.posts = [...this.posts,...json];
+          })
+          .catch(() => alert("Error"))
+          .finally();
+      }, 100);
+    },
   },
   mounted() {
     this.fetchPosts();
+    console.log(this.$refs.observer);
+    
+    const options = {
+      rootMargin: '0px',
+      threshold: 1.0
+    }
+    const callback = (entries, observer) => {
+      if(entries[0].isIntersecting && this.page < this.totalPages)
+        this.loadMorePosts();
+        // console.log("Show!");
+    };
+    const observer = new IntersectionObserver(callback, options);
+    observer.observe(this.$refs.observer);
   },
   computed: {
     sortedPosts() {
@@ -112,9 +130,7 @@ export default {
     },
   },
   watch: {
-    page() {
-      this.fetchPosts();
-    }
+   
   },
 };
 </script>
@@ -144,5 +160,9 @@ export default {
 .current-page {
   border: 2px solid teal;
   background-color: bisque;
+}
+.observer {
+  height: 30px;
+  background: green;
 }
 </style>
