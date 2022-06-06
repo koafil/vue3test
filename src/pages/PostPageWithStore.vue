@@ -1,6 +1,11 @@
 <template>
   <div>
-    <h1>Страница с постами {{ $store.state.likes }}</h1>
+    <h1>Страница с постами {{ $store.getters.doubleLikes }}</h1>
+    <h3>{{ $store.state.isAuth ? "Пользователь авторизован" : "Авторизуйтесь" }}</h3>
+    <div>
+      <my-button @click="$store.commit('incrementLikes')">Лайк</my-button>
+      <my-button @click="$store.commit('decrementLikes')">Дизлайк</my-button>
+    </div>
     <my-input 
       v-model="searchQuery" 
       placeholder="Поиск..." 
